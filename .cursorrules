@@ -1,0 +1,4 @@
+It is crucial that we maintain compatibility with React 17.0.1.
+Use React 17.0.1 always never earlier or later versions.
+This project is meant to integrate with SPFX and SQL 
+please always use fluentui components.
