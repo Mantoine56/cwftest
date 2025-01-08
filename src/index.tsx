@@ -1,30 +1,25 @@
-// import './process.env';
-
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { App } from './App';
 import './styles.css';
 
-// Initialize environment variables
+// Define a minimal environment setup
+const defaultEnv = {
+  NODE_ENV: 'development',
+  PUBLIC_URL: '',
+};
+
+// Ensure we have a minimal environment setup
 if (typeof window !== 'undefined') {
-  const defaultEnv: ProcessEnv = {
-    NODE_ENV: 'development' as NodeEnv,
-    PUBLIC_URL: '',
-  };
-
-  // Ensure _env_ exists with proper typing
-  window._env_ = window._env_ || defaultEnv;
-
-  // Create a minimal process object
-  const minimalProcess: MinimalProcess = {
-    env: {
-      ...window._env_,
-      NODE_ENV: window._env_.NODE_ENV as NodeEnv
-    }
-  };
-
-  // Assign the minimal process object
-  (window as any).process = minimalProcess;
+  // Create a minimal process object if it doesn't exist
+  if (!(window as any).process) {
+    (window as any).process = {
+      env: {
+        NODE_ENV: 'development',
+        PUBLIC_URL: '',
+      }
+    };
+  }
 }
 
 ReactDOM.render(

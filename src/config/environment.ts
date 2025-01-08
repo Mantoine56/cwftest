@@ -1,14 +1,11 @@
+type NodeEnv = 'development' | 'production' | 'test';
+
 type Environment = {
   NODE_ENV: NodeEnv;
   PUBLIC_URL: string;
 };
 
 const getEnvironmentVariable = (key: keyof Environment): string | NodeEnv => {
-  // Check for window._env_ first
-  if (typeof window !== 'undefined' && window._env_?.[key]) {
-    return window._env_[key];
-  }
-  
   // Fallback values
   const fallback: Environment = {
     NODE_ENV: 'development',
