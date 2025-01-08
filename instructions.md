@@ -1,4 +1,4 @@
-# CWF (Client Workflow Framework)
+# CWF Project Documentation
 
 ## Project Structure
 ```
@@ -8,133 +8,96 @@
 │   └── index.html
 ├── src/
 │   ├── components/
-│   │   ├── Footer.tsx        # Bottom navigation bar
-│   │   ├── Header.tsx        # Top application bar
-│   │   ├── Metrics.tsx       # Line chart component
-│   │   ├── Navigation.tsx    # Main navigation tabs
-│   │   └── RoutingStats.tsx  # Bar chart for routing statistics
+│   │   ├── FloatingActionButton.tsx
+│   │   ├── Footer.tsx
+│   │   ├── Header.tsx
+│   │   ├── Metrics.tsx
+│   │   ├── Navigation.tsx
+│   │   └── RoutingStats.tsx
 │   ├── config/
-│   │   ├── env.ts           # Environment configuration
-│   │   └── environment.ts   # Environment variables
+│   │   └── environment.ts
 │   ├── pages/
-│   │   ├── Dashboard.tsx    # Main dashboard layout
-│   │   └── Routings.tsx     # Routings page
+│   │   ├── AddEditGroup.tsx
+│   │   ├── CreateRouting.tsx
+│   │   ├── Dashboard.tsx
+│   │   ├── GroupManagement.tsx
+│   │   └── Routings.tsx
 │   ├── types/
-│   │   └── custom.d.ts      # TypeScript custom declarations
-│   ├── App.tsx              # Root application component
-│   ├── index.tsx           # Application entry point
-│   ├── process.env.ts      # Process environment handling
-│   └── styles.css          # Global styles and animations
-├── package.json           # Dependencies and scripts
-└── tsconfig.json         # TypeScript configuration
+│   │   ├── environment.d.ts
+│   │   └── global.d.ts
+│   ├── App.tsx
+│   ├── index.tsx
+│   └── styles.css
+├── package.json
+└── tsconfig.json
 ```
 
-## Component Hierarchy
-```
-App
-├── Header                # Top bar with application title
-├── Navigation           # Dashboard/Routings/Tasks tabs
-├── Dashboard            # Main content layout
-│   ├── MyTasks         # Left panel with task list
-│   ├── RoutingStats    # Center panel with bar chart
-│   │   └── Metrics     # Line chart below bar chart
-│   └── OverDueRoutings # Right panel with overdue items
-└── Footer              # Bottom links
-```
+## Recent Updates
 
-## Key Components
+### Group Management Feature
+1. Added Group Management page (`src/pages/GroupManagement.tsx`)
+   - Table view of offices with sorting and filtering
+   - Status indicators (Active/Inactive)
+   - Pagination support
+   - Search functionality
+   - Column filters
 
-### CreateRouting.tsx
-- Implements two-section layout with Tasks and Files
-- Manages form state and validation
-- Handles file uploads
-- Implements delete confirmations
-- Uses Fluent UI components
-- Responsive design
+2. Added Add/Edit Group page (`src/pages/AddEditGroup.tsx`)
+   - Office details form
+   - Member management section
+   - Role-based filtering
+   - Member list with delete functionality
 
-### Dashboard.tsx
-- Implements three-column layout using Fluent UI Stack
-- Manages spacing with childrenGap
-- Handles responsive behavior with grow properties
-- Uses card-animation class for consistent styling
+### Global Navigation
+- Updated FloatingActionButton to:
+  - Use navy color (#2E3B50)
+  - Context-aware navigation (routes to different pages based on current location)
+  - Smooth fade-in animation
+  - Subtle grow effect on hover
 
-### RoutingStats.tsx
-- Displays bar chart for routing statistics
-- Shows counts for different routing statuses
-- Uses Fluent UI theming and colors
-- Includes toggle for active/inactive state
-- Responsive bar heights based on values
+### UI/UX Improvements
+1. Table Enhancements:
+   - Added column sorting
+   - Added column filtering
+   - Improved pagination controls
+   - Added search functionality
+
+2. Styling Updates:
+   - Consistent padding and spacing
+   - Responsive layouts
+   - Modern animations and transitions
+   - Improved button interactions
+
+## Technical Notes
 
 ### Environment Configuration
-- Type-safe environment variables
-- Proper process.env handling in browser
-- TypeScript type definitions
-- Fallback values for development
+- Using TypeScript with React 17.0.1
+- FluentUI components for consistent Microsoft styling
+- Environment variables properly typed and configured
 
-## Recent Changes
+### Component Architecture
+- Modular component structure
+- Shared components in `/components`
+- Page-specific components in `/pages`
+- Type definitions in `/types`
 
-### Layout Updates
-- Added CreateRouting page with proper form layout
-- Implemented two-section layout for routing creation
-- Enhanced form validation and user feedback
-- Improved responsive behavior
+### Navigation
+- React Router for routing
+- Context-aware FAB button
+- Consistent navigation patterns
 
-### Component Improvements
-- Added file upload capabilities
-- Enhanced form field validation
-- Improved type safety across components
-- Added proper error handling
-
-### Styling
-- Consistent use of Fluent UI components
-- Proper spacing between elements
-- Responsive design patterns
-- Animation for better UX
+### Data Management
+- Mock data for development
+- Filtered and paginated data handling
+- Type-safe data structures
 
 ## Development Guidelines
+1. Use FluentUI components for consistency
+2. Maintain TypeScript type safety
+3. Follow existing component patterns
+4. Keep responsive design in mind
+5. Use animations sparingly and purposefully
 
-### TypeScript
-- Use TypeScript for all components
-- Define interfaces for props
-- Maintain type safety
-- Use proper type declarations
-
-### Component Structure
-- Keep components focused
-- Use functional components
-- Implement proper prop typing
-- Follow Fluent UI patterns
-
-### State Management
-- Use React hooks
-- Keep state close to usage
-- Implement proper prop drilling
-- Use context where needed
-
-### Performance
-- Optimize re-renders
-- Use proper memoization
-- Implement lazy loading
-- Monitor bundle size
-
-## Getting Started
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-2. Start the development server:
-   ```bash
-   npm start
-   ```
-
-3. Build for production:
-   ```bash
-   npm run build
-   ```
-
-## Notes
-- Compatible with React 17.0.1
-- Uses Fluent UI components
-- Integrates with SPFX and SQL
-- Maintains clean architecture
+## Future Considerations
+1. Advanced filtering and sorting
+2. Performance optimization for large datasets

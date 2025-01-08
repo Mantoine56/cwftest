@@ -10,6 +10,8 @@ import { FloatingActionButton } from './components/FloatingActionButton';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { initializeIcons } from '@fluentui/react/lib/Icons';
 import './styles.css';
+import { GroupManagement } from './pages/GroupManagement';
+import { AddEditGroup } from './pages/AddEditGroup';
 
 // Initialize icons
 initializeIcons();
@@ -25,6 +27,8 @@ export const App: React.FC = () => {
             <Route path="/" element={<Dashboard />} />
             <Route path="/routings" element={<Routings />} />
             <Route path="/routings/create" element={<CreateRouting />} />
+            <Route path="/group-management" element={<GroupManagement />} />
+            <Route path="/group-management/add" element={<AddEditGroup />} />
           </Routes>
         </Stack.Item>
         <Footer />

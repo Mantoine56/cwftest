@@ -1,9 +1,9 @@
 import React, { useState, useCallback } from 'react';
 import { Stack } from '@fluentui/react/lib/Stack';
-import { DetailsList, SelectionMode, IColumn, IDetailsColumnProps } from '@fluentui/react/lib/DetailsList';
+import { DetailsList, SelectionMode, IColumn } from '@fluentui/react/lib/DetailsList';
 import { Dropdown, IDropdownOption } from '@fluentui/react/lib/Dropdown';
 import { SearchBox } from '@fluentui/react/lib/SearchBox';
-import { DefaultButton, PrimaryButton, IconButton } from '@fluentui/react/lib/Button';
+import { IconButton, DefaultButton } from '@fluentui/react/lib/Button';
 import { Text } from '@fluentui/react/lib/Text';
 import { ContextualMenu } from '@fluentui/react/lib/ContextualMenu';
 import { useNavigate } from 'react-router-dom';
@@ -11,75 +11,64 @@ import { useNavigate } from 'react-router-dom';
 // Status options for the dropdown
 const statusOptions: IDropdownOption[] = [
   { key: 'all', text: 'All' },
-  { key: 'New', text: 'New' },
-  { key: 'In Progress', text: 'In Progress' },
-  { key: 'Complete', text: 'Complete' },
-  { key: 'On Hold', text: 'On Hold' }
+  { key: 'Active', text: 'Active' },
+  { key: 'Inactive', text: 'Inactive' }
 ];
-
-// Generate random date within the last 30 days
-const getRandomDate = () => {
-  const end = new Date();
-  const start = new Date();
-  start.setDate(start.getDate() - 30);
-  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime())).toLocaleDateString();
-};
 
 // Generate random tracking number
 const getRandomTracking = () => {
-  return `TRK-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
+  return `OFF-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
 };
 
 // Sample data
 const mockData = Array(30).fill(null).map((_, index) => ({
   key: index,
   status: String(statusOptions[Math.floor(Math.random() * (statusOptions.length - 1) + 1)].key),
-  dueDate: getRandomDate(),
-  title: `Routing Request ${Math.floor(Math.random() * 1000)}`,
-  currentStep: [
-    'Documentation Review',
-    'Approval Pending',
-    'Quality Check',
-    'Final Review',
-    'Client Feedback'
+  officeName: `Office ${Math.floor(Math.random() * 1000)}`,
+  primaryOwner: [
+    'Paul Graham',
+    'Tim Cook',
+    'Sarah Johnson',
+    'Michael Chen',
+    'Emma Wilson'
   ][Math.floor(Math.random() * 5)],
-  createdBy: [
-    'Bob Dylan',
-    'John Lennon',
-    'Paul McCartney',
-    'George Harrison',
-    'Ringo Starr'
+  coordinators: [
+    'Bob Dylan, Tim Cook',
+    'Mick Jagger, David Miller',
+    'John Lennon, Paul McCartney',
+    'Emma Wilson, Michael Chen',
+    'Lisa Anderson, James Taylor'
   ][Math.floor(Math.random() * 5)],
+  modified: new Date(Date.now() - Math.floor(Math.random() * 90) * 24 * 60 * 60 * 1000)
+    .toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
   trackingNumber: getRandomTracking()
-})) as IRoutingItem[];
+}));
 
-interface IRoutingItem {
+interface IOfficeItem {
   key: number;
   status: string;
-  dueDate: string;
-  title: string;
-  currentStep: string;
-  createdBy: string;
+  officeName: string;
+  primaryOwner: string;
+  coordinators: string;
+  modified: string;
   trackingNumber: string;
 }
 
-export const Routings: React.FC = () => {
+export const GroupManagement: React.FC = () => {
+  const navigate = useNavigate();
   const [items] = useState(mockData);
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [searchText, setSearchText] = useState('');
-  const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [sortedColumn, setSortedColumn] = useState<IColumn | undefined>();
   const [isSortedDescending, setIsSortedDescending] = useState(false);
   const [filterMenuProps, setFilterMenuProps] = useState<{ column: IColumn; target: HTMLElement } | null>(null);
   const [columnFilters, setColumnFilters] = useState<Record<string, Set<string>>>({});
-  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   const onColumnClick = useCallback(
     (ev: React.MouseEvent<HTMLElement>, column: IColumn): void => {
       if (ev.ctrlKey) {
-        // Show filter menu on Ctrl+Click
         setFilterMenuProps({ column, target: ev.target as HTMLElement });
         return;
       }
@@ -96,11 +85,10 @@ export const Routings: React.FC = () => {
   }, []);
 
   const getFilterMenuItems = useCallback((column: IColumn) => {
-    // Get unique values for the column
     const uniqueValues = new Set(
       items
-        .map(item => String(item[column.key as keyof IRoutingItem]))
-        .filter(Boolean) // Remove any undefined/null values
+        .map(item => String(item[column.key as keyof IOfficeItem]))
+        .filter(Boolean)
     );
     
     const sortedValues = Array.from(uniqueValues).sort((a, b) => a.localeCompare(b));
@@ -139,7 +127,7 @@ export const Routings: React.FC = () => {
     ];
   }, [items, columnFilters]);
 
-  const renderColumnHeader = (props: IDetailsColumnProps | undefined, columnKey: string) => (
+  const renderColumnHeader = (props: any, columnKey: string) => (
     <Stack 
       horizontal 
       verticalAlign="center" 
@@ -189,71 +177,74 @@ export const Routings: React.FC = () => {
       isSortedDescending: sortedColumn?.key === 'status' && isSortedDescending,
       onColumnClick,
       onRenderHeader: (props) => renderColumnHeader(props, 'status'),
-      onRender: (item) => (
-        <Text>{statusOptions.find(option => option.key === item.status)?.text || item.status}</Text>
+      onRender: (item: IOfficeItem) => (
+        <Stack horizontal verticalAlign="center" tokens={{ childrenGap: 8 }}>
+          <IconButton
+            iconProps={{ 
+              iconName: item.status === 'Active' ? 'CheckMark' : 'StatusCircleRing',
+              styles: { 
+                root: { 
+                  color: item.status === 'Active' ? '#107C10' : '#666666',
+                  fontSize: 16
+                }
+              }
+            }}
+            styles={{ root: { padding: 0 } }}
+          />
+          <Text>{item.status}</Text>
+        </Stack>
       )
     },
     {
-      key: 'dueDate',
-      name: 'Due Date',
-      minWidth: 100,
-      maxWidth: 100,
-      isSorted: sortedColumn?.key === 'dueDate',
-      isSortedDescending: sortedColumn?.key === 'dueDate' && isSortedDescending,
+      key: 'officeName',
+      name: 'Office name',
+      minWidth: 150,
+      maxWidth: 200,
+      isSorted: sortedColumn?.key === 'officeName',
+      isSortedDescending: sortedColumn?.key === 'officeName' && isSortedDescending,
       onColumnClick,
-      onRenderHeader: (props) => renderColumnHeader(props, 'dueDate'),
-      onRender: (item) => item.dueDate
+      onRenderHeader: (props) => renderColumnHeader(props, 'officeName'),
+      onRender: (item: IOfficeItem) => item.officeName
     },
     {
-      key: 'title',
-      name: 'Title',
+      key: 'primaryOwner',
+      name: 'Primary owner',
+      minWidth: 150,
+      maxWidth: 200,
+      isSorted: sortedColumn?.key === 'primaryOwner',
+      isSortedDescending: sortedColumn?.key === 'primaryOwner' && isSortedDescending,
+      onColumnClick,
+      onRenderHeader: (props) => renderColumnHeader(props, 'primaryOwner'),
+      onRender: (item: IOfficeItem) => item.primaryOwner
+    },
+    {
+      key: 'coordinators',
+      name: 'Coordinators',
       minWidth: 200,
       maxWidth: 300,
-      isSorted: sortedColumn?.key === 'title',
-      isSortedDescending: sortedColumn?.key === 'title' && isSortedDescending,
+      isSorted: sortedColumn?.key === 'coordinators',
+      isSortedDescending: sortedColumn?.key === 'coordinators' && isSortedDescending,
       onColumnClick,
-      onRenderHeader: (props) => renderColumnHeader(props, 'title'),
-      onRender: (item) => item.title
+      onRenderHeader: (props) => renderColumnHeader(props, 'coordinators'),
+      onRender: (item: IOfficeItem) => item.coordinators
     },
     {
-      key: 'currentStep',
-      name: 'Current step',
-      minWidth: 150,
-      maxWidth: 200,
-      isSorted: sortedColumn?.key === 'currentStep',
-      isSortedDescending: sortedColumn?.key === 'currentStep' && isSortedDescending,
-      onColumnClick,
-      onRenderHeader: (props) => renderColumnHeader(props, 'currentStep'),
-      onRender: (item) => item.currentStep
-    },
-    {
-      key: 'createdBy',
-      name: 'Created by',
-      minWidth: 150,
-      maxWidth: 200,
-      isSorted: sortedColumn?.key === 'createdBy',
-      isSortedDescending: sortedColumn?.key === 'createdBy' && isSortedDescending,
-      onColumnClick,
-      onRenderHeader: (props) => renderColumnHeader(props, 'createdBy'),
-      onRender: (item) => item.createdBy
-    },
-    {
-      key: 'trackingNumber',
-      name: 'Tracking #',
+      key: 'modified',
+      name: 'Modified',
       minWidth: 100,
-      maxWidth: 100,
-      isSorted: sortedColumn?.key === 'trackingNumber',
-      isSortedDescending: sortedColumn?.key === 'trackingNumber' && isSortedDescending,
+      maxWidth: 150,
+      isSorted: sortedColumn?.key === 'modified',
+      isSortedDescending: sortedColumn?.key === 'modified' && isSortedDescending,
       onColumnClick,
-      onRenderHeader: (props) => renderColumnHeader(props, 'trackingNumber'),
-      onRender: (item) => item.trackingNumber
+      onRenderHeader: (props) => renderColumnHeader(props, 'modified'),
+      onRender: (item: IOfficeItem) => item.modified
     }
   ];
 
-  const getSortedItems = (items: IRoutingItem[]): IRoutingItem[] => {
+  const getSortedItems = (items: IOfficeItem[]): IOfficeItem[] => {
     if (!sortedColumn) return items;
 
-    const key = sortedColumn.key as keyof IRoutingItem;
+    const key = sortedColumn.key as keyof IOfficeItem;
     return [...items].sort((a, b) => {
       const aValue = String(a[key]).toLowerCase();
       const bValue = String(b[key]).toLowerCase();
@@ -261,12 +252,12 @@ export const Routings: React.FC = () => {
     });
   };
 
-  const getFilteredItems = (items: IRoutingItem[]): IRoutingItem[] => {
+  const getFilteredItems = (items: IOfficeItem[]): IOfficeItem[] => {
     return items.filter(item => {
       // Check if item passes all column filters
       return Object.entries(columnFilters).every(([key, values]) => {
         if (!values?.size) return true;
-        return values.has(String(item[key as keyof IRoutingItem]));
+        return values.has(String(item[key as keyof IOfficeItem]));
       });
     });
   };
@@ -305,11 +296,13 @@ export const Routings: React.FC = () => {
           padding: '20px 40px',
           height: '100%',
           boxSizing: 'border-box',
-          paddingBottom: '100px' // Add padding at the bottom
+          paddingBottom: '100px',
+          position: 'relative'
         }
       }}
     >
       <Stack tokens={{ childrenGap: 20 }}>
+        <Text variant="xLarge">Office Manager</Text>
         <Stack horizontal horizontalAlign="space-between" verticalAlign="center">
           <Stack horizontal tokens={{ childrenGap: 10 }}>
             <Dropdown
@@ -319,22 +312,12 @@ export const Routings: React.FC = () => {
               styles={{ root: { width: 200 } }}
               onChange={(_, option) => setSelectedStatus(option?.key as string)}
             />
-            <DefaultButton
-              iconProps={{ iconName: 'Filter' }}
-              text="Filter"
-              onClick={() => setIsFilterVisible(!isFilterVisible)}
-            />
           </Stack>
           <Stack horizontal tokens={{ childrenGap: 10 }}>
             <SearchBox
-              placeholder="Find: Tracking, Title..."
+              placeholder="Find: Name, Owner (type ahead)"
               styles={{ root: { width: 300 } }}
               onChange={(_, newValue) => setSearchText(newValue || '')}
-            />
-            <PrimaryButton
-              iconProps={{ iconName: 'Add' }}
-              text="New"
-              onClick={() => navigate('/routings/create')}
             />
           </Stack>
         </Stack>
@@ -411,4 +394,4 @@ export const Routings: React.FC = () => {
       </Stack>
     </Stack>
   );
-};
+}; 

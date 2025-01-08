@@ -2,8 +2,11 @@ import React from 'react';
 import { Stack } from '@fluentui/react/lib/Stack';
 import { Text } from '@fluentui/react/lib/Text';
 import { IconButton } from '@fluentui/react/lib/Button';
+import { useNavigate } from 'react-router-dom';
 
 export const Header: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
     <Stack
       horizontal
@@ -36,7 +39,12 @@ export const Header: React.FC = () => {
         />
         <IconButton
           iconProps={{ iconName: 'Settings' }}
-          styles={{ root: { color: 'white' } }}
+          onClick={() => navigate('/group-management')}
+          styles={{
+            root: {
+              color: 'white'
+            }
+          }}
         />
         <IconButton
           iconProps={{ iconName: 'Contact' }}
